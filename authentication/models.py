@@ -6,7 +6,7 @@ from django.utils import timezone
 class EmailKey(models.Model):
     
     key = models.CharField(max_length=30)
-    email = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     expiry_time = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=5))
 
     def is_expired(self):

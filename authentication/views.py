@@ -7,7 +7,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer
+from .serializers import EmailSerializer, KeySerializer 
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .models import EmailKey
@@ -17,7 +17,7 @@ import random
 class Email(APIView):
 
     permission_classes = [AllowAny]
-    serializer_class = UserSerializer
+    serializer_class = EmailSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -33,13 +33,13 @@ class Email(APIView):
 class Key(APIView):
 
     permission_classes = [AllowAny]
-    serializer_class = UserSerializer
+    serializer_class = KeySerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        user = EmailKey.objects.get(key=request.data)
+        user = EmailKey.objects.get(key=request.data['key'])
         token, _ = Token.objects.get_or_create(user=user)
 
         if user.is_exprired():
@@ -62,11 +62,11 @@ def key_check(sent_key):
 def generate_email_code(email):
     email_code = random.randint(1, 100)
 
-    user = EmailKey.objects.get_or_create(email=email, key=email_code)
+    user = EmailKey.objects.get_or_create(user=email, key=email_code)
     user.save()
 
     return email_code
 
 
 def send_token(email, token):
-    send_mail('Confirm your login', token, settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False)
+    send_mail('Confirm your login', str(token), settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None)\
