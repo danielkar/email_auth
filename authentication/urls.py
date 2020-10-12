@@ -4,6 +4,6 @@ from .views import Email, Key
 app_name = "authentication"
 
 urlpatterns = [
-    path('auth/', Email.as_view()),
+    path('email/', Email.as_view()),
     path('key/', Key.as_view()), 
 ]

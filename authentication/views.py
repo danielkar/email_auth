@@ -9,8 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from .serializers import EmailSerializer, KeySerializer 
 from django.core.mail import send_mail
-from django.contrib.auth.models import User
-from .models import EmailKey
+from .models import User
 import random
 
 
@@ -39,13 +38,13 @@ class Key(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        user = EmailKey.objects.get(key=request.data['key'])
+        user = User.objects.get(key=request.data['key'])
         token, _ = Token.objects.get_or_create(user=user)
 
         if user.is_exprired():
             return Response({"error": "time-out"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if key_check(request.data):
+        if key_check(request.data['key']):
             return Response({"token": token.key}, status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Wrong key"}, status=status.HTTP_400_BAD_REQUEST)
@@ -53,7 +52,7 @@ class Key(APIView):
 
 def key_check(sent_key):
     try:
-        user = EmailKey.objects.get(key=sent_key)
+        user = User.objects.get(key=sent_key)
         return True
     except:
         return False
@@ -61,12 +60,11 @@ def key_check(sent_key):
 
 def generate_email_code(email):
     email_code = random.randint(1, 100)
-
-    user = EmailKey.objects.get_or_create(user=email, key=email_code)
+    user = User.objects.get_or_create(email=email, key=email_code)
     user.save()
 
     return email_code
 
 
 def send_token(email, token):
-    send_mail('Confirm your login', str(token), settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None)\
+    send_mail('Confirm your login', str(token), settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None)
