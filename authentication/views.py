@@ -60,8 +60,11 @@ def key_check(sent_key):
 
 def generate_email_code(email):
     email_code = random.randint(1, 100)
-    user = User.objects.get_or_create(email=email, key=email_code)
-    user.save()
+    user, created = User.objects.get_or_create(email=email)
+
+    if not created:
+        user.key = str(email_code)
+        user.save()
 
     return email_code
 
