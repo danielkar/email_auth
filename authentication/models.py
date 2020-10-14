@@ -12,8 +12,8 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    def is_expired(self):
-        if timezone.now() >= self.expiry_time:
-            return True
-        else:
-            return False
+#    def is_expired(self):
+#        if timezone.now() >= self.expiry_time:
+#            return True
+#        else:
+#            return False

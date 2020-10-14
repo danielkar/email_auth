@@ -75,11 +75,23 @@ WSGI_APPLICATION = 'email_auth.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
 
@@ -134,10 +146,9 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'authentication.User'
 
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_PASSWORD = 'test2281337'
 EMAIL_HOST_USER = 'testapi2281337@gmail.com'
-EMAIL_PORT = 587
+EMAIL_PORT = 465
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
